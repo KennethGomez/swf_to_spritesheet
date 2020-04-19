@@ -1,0 +1,12 @@
+[package]
+name = "figure_extractor"
+version = "0.1.0"
+authors = ["KennethGomez <kennethgomezfdz@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+swf="0.1.2"
+image="0.23.3"
+flate2="1.0.13"
