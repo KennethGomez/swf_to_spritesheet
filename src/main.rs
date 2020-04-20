@@ -5,7 +5,8 @@ use std::collections::HashMap;
 
 use swf::{Tag, SymbolClassLink};
 
-use figure_extractor::images::images;
+use figure_extractor::images::{images, spritesheet};
+use figure_extractor::images::images::Image;
 
 extern crate image;
 
@@ -50,11 +51,24 @@ fn extract_swf(
         }
     }
 
-    for (name, image) in images_by_name {
-        let file_name = format!("images/{}.png", name);
+    let mut images = Vec::<Image>::new();
 
-        image.save(file_name).unwrap();
+    for (_, image) in images_by_name {
+        images.push(image)
     }
+
+    let file_name = format!("images/{}.png", "test");
+    let spritesheet = spritesheet::create_spritesheet(images);
+
+    if spritesheet.is_some() {
+        spritesheet.unwrap().buffer.save(file_name).unwrap()
+    }
+
+    // for (name, image) in images_by_name {
+    //     let file_name = format!("images/{}.png", name);
+    //
+    //     image.buffer.save(file_name).unwrap();
+    // }
 
     println!("elapsed {}ms", now.elapsed().as_millis());
 }

@@ -1,35 +1,32 @@
 use swf::DefineBitsLossless;
 use flate2::read::ZlibDecoder;
 use std::io::Read;
-use image::ImageResult;
+
+use crate::buffer::buffer::ImageBuffer;
 
 extern crate image;
 
 pub struct Image {
     pub id: u16,
-    pub width: u32,
-    pub height: u32,
-    data: Vec<u8>,
+    pub buffer: ImageBuffer,
 }
 
 impl Clone for Image {
     fn clone(&self) -> Self {
         Image {
             id: self.id,
-            width: self.width,
-            height: self.height,
-            data: self.data.clone()
+            buffer: self.buffer.clone(),
         }
     }
 }
 
 impl Image {
     pub fn from(id: u16, width: u32, height: u32, data: Vec<u8>) -> Image {
+        let buffer = ImageBuffer::from(width, height, data);
+
         let mut image = Image {
             id,
-            width,
-            height,
-            data,
+            buffer,
         };
 
         image.reorder_colors();
@@ -39,9 +36,9 @@ impl Image {
 
     pub fn reorder_colors(&mut self) {
         let mut reordered = Vec::<u8>::new();
-        let mut iter = self.data.iter();
+        let mut iter = self.buffer.data.iter();
 
-        for _ in 0..self.data.len() / 4 {
+        for _ in 0..self.buffer.data.len() / 4 {
             let a = iter.next().unwrap();
 
             reordered.push(*iter.next().unwrap());
@@ -50,21 +47,7 @@ impl Image {
             reordered.push(*a);
         }
 
-        self.data = reordered
-    }
-
-    pub fn get_buffer(&self) -> &[u8] {
-        &self.data
-    }
-
-    pub fn save(&self, path: String) -> ImageResult<()> {
-        image::save_buffer(
-            path,
-            self.get_buffer(),
-            self.width,
-            self.height,
-            image::ColorType::Rgba8,
-        )
+        self.buffer.data = reordered
     }
 }
 
