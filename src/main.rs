@@ -6,7 +6,6 @@ use std::collections::HashMap;
 use swf::{Tag, SymbolClassLink};
 
 use figure_extractor::images::{images, spritesheet};
-use figure_extractor::images::images::Image;
 
 extern crate image;
 
@@ -37,7 +36,13 @@ fn extract_swf(
         if let Tag::DefineBitsLossless(lossless) = &tag {
             let image = images::extract_image_from_lossless(lossless);
 
-            images.insert(image.id, image);
+            if image.is_some() {
+                let i = image.unwrap();
+
+                images.insert(i.id, i);
+            } else {
+                println!("Error creating image#{}", lossless.id)
+            }
         }
     }
 
@@ -51,7 +56,7 @@ fn extract_swf(
         }
     }
 
-    let mut images = Vec::<Image>::new();
+    let mut images = Vec::<images::Image>::new();
 
     for (_, image) in images_by_name {
         images.push(image)

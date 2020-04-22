@@ -2,13 +2,11 @@ use swf::DefineBitsLossless;
 use flate2::read::ZlibDecoder;
 use std::io::Read;
 
-use crate::buffer::buffer::ImageBuffer;
-
-extern crate image;
+use image::{RgbaImage, ImageBuffer, Pixel};
 
 pub struct Image {
     pub id: u16,
-    pub buffer: ImageBuffer,
+    pub buffer: RgbaImage,
 }
 
 impl Clone for Image {
@@ -21,37 +19,37 @@ impl Clone for Image {
 }
 
 impl Image {
-    pub fn from(id: u16, width: u32, height: u32, data: Vec<u8>) -> Image {
-        let buffer = ImageBuffer::from(width, height, data);
+    pub fn from(id: u16, width: u32, height: u32, data: Vec<u8>) -> Option<Image> {
+        let buffer = ImageBuffer::from_vec(width, height, data);
 
-        let mut image = Image {
-            id,
-            buffer,
-        };
+        if buffer.is_none() {
+            None
+        } else {
+            let mut image = Image {
+                id,
+                buffer: buffer.unwrap(),
+            };
 
-        image.reorder_colors();
+            image.reorder_colors();
 
-        image
+            Some(image)
+        }
     }
 
     pub fn reorder_colors(&mut self) {
-        let mut reordered = Vec::<u8>::new();
-        let mut iter = self.buffer.data.iter();
+        for argb in self.buffer.pixels_mut() {
+            let channels = argb.0;
+            let rgba = argb.channels_mut();
 
-        for _ in 0..self.buffer.data.len() / 4 {
-            let a = iter.next().unwrap();
-
-            reordered.push(*iter.next().unwrap());
-            reordered.push(*iter.next().unwrap());
-            reordered.push(*iter.next().unwrap());
-            reordered.push(*a);
+            rgba[0] = channels[1];
+            rgba[1] = channels[2];
+            rgba[2] = channels[3];
+            rgba[3] = channels[0];
         }
-
-        self.buffer.data = reordered
     }
 }
 
-pub fn extract_image_from_lossless(lossless: &DefineBitsLossless) -> Image {
+pub fn extract_image_from_lossless(lossless: &DefineBitsLossless) -> Option<Image> {
     let id: u16 = lossless.id;
     let width: u32 = lossless.width as u32;
     let height: u32 = lossless.height as u32;
