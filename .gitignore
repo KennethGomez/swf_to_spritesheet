@@ -13,4 +13,4 @@ Cargo.lock
 .idea/
 
 # Custom project files
-/images/
+/output/

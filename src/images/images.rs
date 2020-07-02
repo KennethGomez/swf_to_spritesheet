@@ -1,5 +1,6 @@
-use flate2::read::ZlibDecoder;
 use std::io::Read;
+
+use flate2::read::ZlibDecoder;
 use swf::DefineBitsLossless;
 
 use image::{ImageBuffer, Pixel, RgbaImage};
