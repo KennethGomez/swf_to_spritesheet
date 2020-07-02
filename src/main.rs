@@ -8,8 +8,8 @@ use std::time::Instant;
 
 use swf::Tag;
 
-use figure_extractor::images::images::{extract_image_from_lossless, Image};
-use figure_extractor::images::spritesheet::create_spritesheet;
+use swf_to_spritesheet::images::images::{extract_image_from_lossless, Image};
+use swf_to_spritesheet::images::spritesheet::create_spritesheet;
 
 fn main() {
 	let args: Vec<String> = env::args().collect();
