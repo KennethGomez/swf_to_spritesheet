@@ -45,7 +45,8 @@ fn extract_swf(
 	let file_name = swf_file_path
 		.file_stem()
 		.expect("Unable to get file name from path")
-		.to_str().unwrap();
+		.to_str()
+		.unwrap();
 
 	let mut symbols = None;
 	let mut images: HashMap<u16, Image> = HashMap::new();

@@ -1,5 +1,5 @@
 [package]
-name = "figure_extractor"
+name = "swf_to_spritesheet"
 version = "0.1.0"
 authors = ["KennethGomez <kennethgomezfdz@gmail.com>"]
 edition = "2018"
