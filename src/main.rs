@@ -1,15 +1,12 @@
-use std::collections::HashMap;
 use std::env;
 use std::fs;
-use std::fs::File;
-use std::io::{BufReader, Result};
+use std::io::Result;
 use std::path::Path;
 use std::time::Instant;
 
-use swf::Tag;
-
-use swf_to_spritesheet::images::images::{extract_image_from_lossless, Image};
+use swf_to_spritesheet::images::image::Image;
 use swf_to_spritesheet::images::spritesheet::create_spritesheet;
+use swf_to_spritesheet::swf::extractor::Extractor;
 
 fn main() {
 	let args: Vec<String> = env::args().collect();
@@ -48,40 +45,14 @@ fn extract_swf(
 		.to_str()
 		.unwrap();
 
-	let mut symbols = None;
-	let mut images: HashMap<u16, Image> = HashMap::new();
-	let mut images_by_name: HashMap<String, Image> = HashMap::new();
-
-	let file = File::open(swf_file_path)?;
-
-	let reader = BufReader::new(file);
-	let swf = swf::read_swf(reader)?;
 	let now = Instant::now();
 
-	for tag in &swf.tags {
-		if let Tag::SymbolClass(symbol_class_links) = &tag {
-			symbols = Some(symbol_class_links.clone());
-		}
-
-		if let Tag::DefineBitsLossless(lossless) = &tag {
-			let image_lossless = extract_image_from_lossless(lossless)
-				.expect(format!("Error creating image #{}", lossless.id).as_str());
-
-			images.insert(image_lossless.id, image_lossless);
-		}
-	}
-
-	for symbol in symbols.unwrap_or_default() {
-		let image = images.get(&symbol.id);
-
-		if image.is_some() {
-			images_by_name.insert(symbol.class_name, image.unwrap().clone());
-		}
-	}
+	let extractor = Extractor::new(swf_file_path);
+	let swf = extractor.extract_swf();
 
 	let mut images = Vec::<Image>::new();
 
-	for (_, image_by_name) in images_by_name {
+	for (_, image_by_name) in swf.images {
 		images.push(image_by_name)
 	}
 

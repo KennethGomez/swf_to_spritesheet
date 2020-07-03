@@ -55,7 +55,7 @@ impl Image {
 	}
 }
 
-pub fn extract_image_from_lossless(lossless: &DefineBitsLossless) -> Option<Image> {
+pub fn extract_image_from_lossless(lossless: DefineBitsLossless) -> Option<Image> {
 	let id: u16 = lossless.id;
 	let width: u32 = lossless.width as u32;
 	let height: u32 = lossless.height as u32;

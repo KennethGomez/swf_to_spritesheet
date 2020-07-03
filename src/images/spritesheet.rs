@@ -1,6 +1,6 @@
 use image::{ImageBuffer, RgbaImage};
 
-use crate::images::images::Image;
+use crate::images::image::Image;
 
 pub struct SpriteSheet {
 	pub buffer: RgbaImage,

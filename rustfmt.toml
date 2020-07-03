@@ -1,0 +1,4 @@
+reorder_imports = true
+hard_tabs = true
+fn_args_layout = "Vertical"
+max_width = 100
