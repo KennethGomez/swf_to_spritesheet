@@ -43,7 +43,9 @@ fn extract_swf(
 		.file_stem()
 		.expect("Unable to get file name from path")
 		.to_str()
-		.unwrap();
+		.unwrap()
+		.parse()
+		.expect("Unable to parse file name");
 
 	let now = Instant::now();
 
@@ -56,14 +58,10 @@ fn extract_swf(
 		images.push(image_by_name)
 	}
 
-	let file_name = format!("{}/{}.png", output_path.to_str().unwrap(), file_name);
-	let spritesheet = create_spritesheet(images)
+	let spritesheet = create_spritesheet(images, file_name)
 		.expect("Error creating spritesheet: there're no output to create spritesheet");
 
-	spritesheet
-		.buffer
-		.save(file_name)
-		.expect("Error saving spritesheet");
+	spritesheet.save(output_path);
 
 	println!("elapsed {}ms", now.elapsed().as_millis());
 
